@@ -28,7 +28,7 @@ export default function TopicPage() {
 
   return (
     <AppShell title={topic.label} showBack>
-      <section className="hero-card compact-card">
+      {/* <section className="hero-card compact-card">
         <div>
           <p className="eyebrow">Topic view</p>
           <h2>{topic.description}</h2>
@@ -42,11 +42,11 @@ export default function TopicPage() {
             {expanded ? 'Show less' : 'Show more'}
           </button>
         </div>
-      </section>
+      </section> */}
 
       <TopicGraph topic={topic} words={words} expanded={expanded} />
 
-      <section className="section-block slim-stack">
+      {/* <section className="section-block slim-stack">
         {words.slice(0, expanded ? words.length : 3).map((word) => (
           <div key={word.id} className="mini-list-card">
             <div>
@@ -63,14 +63,7 @@ export default function TopicPage() {
             </div>
           </div>
         ))}
-      </section>
-
-      <section className="info-strip actionable-strip">
-        <span>This page is the progressive topic map from the paper prototype.</span>
-        <button className="text-button" onClick={() => notify('Tip: try Kinship next to see the possessor-form toggle.', 'info')}>
-          Prototype note
-        </button>
-      </section>
+      </section> */}
     </AppShell>
   )
 }
