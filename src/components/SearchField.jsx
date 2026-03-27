@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { searchWords } from '../data'
 
 function normalize(text) {
@@ -48,6 +48,7 @@ export default function SearchField({
   onSubmit,
   placeholder = 'Search',
 }) {
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const suggestions = useMemo(() => {
     if (!value.trim()) return []
     return searchWords(value).slice(0, 5)
@@ -59,13 +60,18 @@ export default function SearchField({
         className="search-box"
         onSubmit={(event) => {
           event.preventDefault()
+          setShowSuggestions(false)
           onSubmit(value)
         }}
       >
         <span className="search-icon">⌕</span>
         <input
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            onChange(event.target.value)
+            setShowSuggestions(true)
+          }}
+          onFocus={() => setShowSuggestions(true)}
           placeholder={placeholder}
           aria-label="Search"
         />
@@ -74,7 +80,7 @@ export default function SearchField({
         </button>
       </form>
 
-      {value.trim() && suggestions.length > 0 && (
+      {showSuggestions && value.trim() && suggestions.length > 0 && (
         <div className="suggestion-menu">
           {suggestions.map((word) => {
             const suggestion = getSuggestionLabel(value, word)
@@ -84,7 +90,10 @@ export default function SearchField({
                 key={word.id}
                 type="button"
                 className="suggestion-item"
-                onClick={() => onSubmit(suggestion.submitValue)}
+                onClick={() => {
+                  setShowSuggestions(false)
+                  onSubmit(suggestion.submitValue)
+                }}
               >
                 <span>{suggestion.text}</span>
                 <span className="muted">Word</span>
