@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { HELP_BY_ROUTE } from '../data'
-import { useApp } from '../AppContext'
 import BottomNav from './BottomNav'
 import HelpDrawer from './HelpDrawer'
 import ToastStack from './ToastStack'
@@ -16,7 +15,6 @@ function getHelpKey(pathname) {
 }
 
 export default function AppShell({ title, children, showBack = false }) {
-  const { mode, setMode } = useApp()
   const navigate = useNavigate()
   const location = useLocation()
   const [helpOpen, setHelpOpen] = useState(false)

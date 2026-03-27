@@ -12,7 +12,6 @@ function makeToast(message, tone = 'success') {
 }
 
 export function AppProvider({ children }) {
-  const [mode, setMode] = useState('learner')
   const [savedTopics, setSavedTopics] = useState(getInitialSavedTopics())
   const [toasts, setToasts] = useState([])
 
@@ -65,8 +64,6 @@ export function AppProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      mode,
-      setMode,
       savedTopics,
       saveTopic,
       deleteTopic,
@@ -74,7 +71,7 @@ export function AppProvider({ children }) {
       notify,
       toasts,
     }),
-    [mode, savedTopics, toasts],
+    [savedTopics, toasts],
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

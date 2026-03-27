@@ -1,15 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import AppShell from '../components/AppShell'
 import Modal from '../components/Modal'
 import { getWord } from '../data'
 import { useApp } from '../AppContext'
 
-function RelationBubble({ word, position }) {
+function getDisplayText(word, displayLanguage) {
+  const isCreeFirst = displayLanguage === 'cree'
+
+  return {
+    title: isCreeFirst ? word.cree : word.english,
+    form: word.syllabics || '',
+    translation: isCreeFirst ? word.english : word.cree,
+  }
+}
+
+function RelationBubble({ word, position, displayLanguage }) {
+  const text = getDisplayText(word, displayLanguage)
+
   return (
-    <Link className="relation-bubble" to={`/details/${word.id}`} style={position}>
-      <strong>{word.english}</strong>
-      <span>{word.cree}</span>
+    <Link className="relation-bubble" to={`/related/${word.id}?lang=${displayLanguage}`} style={position}>
+      <strong>{text.title}</strong>
+      {text.form ? <small>{text.form}</small> : null}
+      <span>{text.translation}</span>
     </Link>
   )
 }
@@ -23,11 +36,14 @@ const relationPositions = [
 
 export default function RelatedPage() {
   const { wordId } = useParams()
-  const { mode, notify, saveTopic } = useApp()
+  const [searchParams] = useSearchParams()
+  const displayLanguage = searchParams.get('lang') === 'cree' ? 'cree' : 'english'
+
+  const { notify, saveTopic } = useApp()
   const [allWordsOpen, setAllWordsOpen] = useState(false)
   const [saveOpen, setSaveOpen] = useState(false)
   const [topicName, setTopicName] = useState('')
-  const [filter, setFilter] = useState('all')
+
   const word = getWord(wordId)
 
   const allRelations = useMemo(() => {
@@ -37,21 +53,12 @@ export default function RelatedPage() {
       .filter((relation) => relation.word)
   }, [word])
 
-  const filteredRelations = useMemo(() => {
-    if (filter === 'all') return allRelations
-    return allRelations.filter((relation) => relation.type === filter)
-  }, [allRelations, filter])
-
-  const [selectedIds, setSelectedIds] = useState(filteredRelations.slice(0, 3).map((relation) => relation.word.id))
+  const [selectedIds, setSelectedIds] = useState([])
 
   useEffect(() => {
     setSelectedIds(allRelations.slice(0, 3).map((relation) => relation.word.id))
-    setTopicName(`${word?.english || 'Topic'} set`)
-  }, [wordId])
-
-  useEffect(() => {
-    setSelectedIds((current) => current.filter((id) => filteredRelations.some((relation) => relation.word.id === id)))
-  }, [filter])
+    setTopicName(`${displayLanguage === 'cree' ? word?.cree : word?.english || 'Topic'} set`)
+  }, [wordId, allRelations, word, displayLanguage])
 
   if (!word) {
     return (
@@ -63,35 +70,34 @@ export default function RelatedPage() {
     )
   }
 
-  const selectedWords = filteredRelations
+  const selectedWords = allRelations
     .filter((relation) => selectedIds.includes(relation.word.id))
     .map((relation) => relation.word)
 
   const toggleWord = (id) => {
-    setSelectedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]))
+    setSelectedIds((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+    )
   }
+
+  const focusText = getDisplayText(word, displayLanguage)
 
   return (
     <AppShell title="Related Words" showBack>
       <section className="hero-card compact-card">
         <div>
           <p className="eyebrow">Current focus</p>
-          <h2>
-            {word.english} · {word.cree}
-          </h2>
-          <p className="muted">{word.shortDefinition}</p>
+          <h2>{focusText.title}</h2>
+          {focusText.form ? <p className="muted">{focusText.form}</p> : null}
+          <p className="muted">{focusText.translation}</p>
         </div>
+
         <div className="chip-row">
-          {mode === 'expert' && ['all', ...Array.from(new Set(allRelations.map((relation) => relation.type)))].map((type) => (
-            <button
-              key={type}
-              className={filter === type ? 'chip chip-highlight button-chip' : 'chip chip-neutral button-chip'}
-              onClick={() => setFilter(type)}
-            >
-              {type === 'all' ? 'All links' : type}
-            </button>
-          ))}
-          <button className="icon-button icon-soft" onClick={() => notify(`Audio preview: ${word.cree}`, 'info')}>
+          <button
+            className="icon-button icon-soft"
+            onClick={() => notify(`Audio preview: ${word.cree}`, 'info')}
+            aria-label="Play audio preview"
+          >
             🔊
           </button>
         </div>
@@ -99,11 +105,18 @@ export default function RelatedPage() {
 
       <section className="relationship-map-card">
         <div className="focus-bubble">
-          <strong>{word.english}</strong>
-          <span>{word.cree}</span>
+          <strong>{focusText.title}</strong>
+          {focusText.form ? <small>{focusText.form}</small> : null}
+          <span>{focusText.translation}</span>
         </div>
+
         {selectedWords.slice(0, 4).map((relationWord, index) => (
-          <RelationBubble key={relationWord.id} word={relationWord} position={relationPositions[index]} />
+          <RelationBubble
+            key={relationWord.id}
+            word={relationWord}
+            position={relationPositions[index]}
+            displayLanguage={displayLanguage}
+          />
         ))}
       </section>
 
@@ -111,49 +124,49 @@ export default function RelatedPage() {
         <button className="secondary-button" onClick={() => setAllWordsOpen(true)}>
           All Related Words
         </button>
-        <Link className="secondary-button" to={`/details/${word.id}`}>
+
+        <Link className="secondary-button" to={`/details/${word.id}?lang=${displayLanguage}`}>
           Open Details
         </Link>
+
         <button className="primary-button" onClick={() => setSaveOpen(true)}>
           Save Topic
         </button>
       </section>
 
-      <section className="section-block slim-stack">
-        {selectedWords.map((relationWord) => {
-          const relationMeta = filteredRelations.find((relation) => relation.word.id === relationWord.id)
-          return (
-            <div key={relationWord.id} className="mini-list-card">
-              <div>
-                <strong>{relationWord.english}</strong>
-                <p className="muted small-copy">{relationWord.cree}</p>
-              </div>
-              <div className="chip-row compact-chip-row">
-                {mode === 'expert' && relationMeta && <span className="chip chip-soft">{relationMeta.type}</span>}
-                <Link className="text-button" to={`/details/${relationWord.id}`}>
-                  View
-                </Link>
-              </div>
-            </div>
-          )
-        })}
-      </section>
-
       {allWordsOpen && (
         <Modal title="All Related Words" onClose={() => setAllWordsOpen(false)}>
           <div className="stack-list compact-stack">
-            {filteredRelations.map((relation) => (
-              <div key={relation.word.id} className="selection-row">
-                <div>
-                  <strong>{relation.word.english}</strong>
-                  <p className="muted small-copy">{relation.word.cree}</p>
-                  {mode === 'expert' && <small className="muted">Relation: {relation.type}</small>}
+            {allRelations.map((relation) => {
+              const relationText = getDisplayText(relation.word, displayLanguage)
+
+              return (
+                <div key={relation.word.id} className="selection-row">
+                  <Link
+                    className="selection-link"
+                    to={`/related/${relation.word.id}?lang=${displayLanguage}`}
+                    onClick={() => setAllWordsOpen(false)}
+                  >
+                    <strong>{relationText.title}</strong>
+                    {relationText.form ? <p className="muted small-copy">{relationText.form}</p> : null}
+                    <p className="muted small-copy">{relationText.translation}</p>
+                  </Link>
+
+                  <div className="mini-actions">
+                    <button
+                      className={
+                        selectedIds.includes(relation.word.id)
+                          ? 'secondary-button small'
+                          : 'primary-button small'
+                      }
+                      onClick={() => toggleWord(relation.word.id)}
+                    >
+                      {selectedIds.includes(relation.word.id) ? 'Unselect' : 'Select'}
+                    </button>
+                  </div>
                 </div>
-                <button className={selectedIds.includes(relation.word.id) ? 'secondary-button small' : 'primary-button small'} onClick={() => toggleWord(relation.word.id)}>
-                  {selectedIds.includes(relation.word.id) ? 'Unselect' : 'Select'}
-                </button>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </Modal>
       )}
@@ -164,24 +177,33 @@ export default function RelatedPage() {
             <span>Topic name</span>
             <input value={topicName} onChange={(event) => setTopicName(event.target.value)} />
           </label>
+
           <div className="preview-box">
             <strong>Words to save</strong>
             <div className="chip-row compact-chip-row">
-              {[word, ...selectedWords].map((item) => (
-                <span key={item.id} className="chip chip-neutral">
-                  {item.english}
-                </span>
-              ))}
+              {[word, ...selectedWords].map((item) => {
+                const itemText = getDisplayText(item, displayLanguage)
+                return (
+                  <span key={item.id} className="chip chip-neutral">
+                    {itemText.title}
+                  </span>
+                )
+              })}
             </div>
           </div>
+
           <div className="modal-actions">
             <button className="secondary-button" onClick={() => setSaveOpen(false)}>
               Cancel
             </button>
+
             <button
               className="primary-button"
               onClick={() => {
-                saveTopic({ name: topicName, words: [word.id, ...selectedWords.map((item) => item.id)] })
+                saveTopic({
+                  name: topicName,
+                  words: [word.id, ...selectedWords.map((item) => item.id)],
+                })
                 setSaveOpen(false)
               }}
             >

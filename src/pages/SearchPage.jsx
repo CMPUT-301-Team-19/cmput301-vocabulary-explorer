@@ -6,12 +6,30 @@ import WordCard from '../components/WordCard'
 import { getClosestMatches, searchWords } from '../data'
 import { useApp } from '../AppContext'
 
+function normalize(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+}
+
+function detectSearchLanguage(query, results) {
+  const normalizedQuery = normalize(query)
+  if (!normalizedQuery) return 'english'
+
+  const creeExactMatch = results.some(
+    (word) =>
+      normalize(word.cree) === normalizedQuery || normalize(word.syllabics) === normalizedQuery,
+  )
+
+  return creeExactMatch ? 'cree' : 'english'
+}
+
 export default function SearchPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const initialQuery = searchParams.get('q') || ''
   const [query, setQuery] = useState(initialQuery)
-  const { mode, notify } = useApp()
+  const { notify } = useApp()
 
   useEffect(() => {
     setQuery(initialQuery)
@@ -20,6 +38,10 @@ export default function SearchPage() {
   const results = useMemo(() => searchWords(initialQuery), [initialQuery])
   const closestMatches = useMemo(() => getClosestMatches(initialQuery), [initialQuery])
   const showNoDirectTranslation = initialQuery.trim() && results.length === 0
+  const displayLanguage = useMemo(
+    () => detectSearchLanguage(initialQuery, results),
+    [initialQuery, results],
+  )
 
   return (
     <AppShell title="Search" showBack>
@@ -41,7 +63,12 @@ export default function SearchPage() {
       {results.length > 0 && (
         <div className="stack-list">
           {results.map((word) => (
-            <WordCard key={word.id} word={word} mode={mode} onPlayAudio={(item) => notify(`Audio preview: ${item.cree}`, 'info')} />
+            <WordCard
+              key={word.id}
+              word={word}
+              displayLanguage={displayLanguage}
+              onPlayAudio={(item) => notify(`Audio preview: ${item.cree}`, 'info')}
+            />
           ))}
         </div>
       )}
@@ -64,11 +91,17 @@ export default function SearchPage() {
               Browse Kinship
             </button>
           </div>
+
           <div className="closest-match-box">
             <h3>Closest matches</h3>
             <div className="stack-list compact-stack">
               {closestMatches.map((word) => (
-                <WordCard key={word.id} word={word} mode={mode} onPlayAudio={(item) => notify(`Audio preview: ${item.cree}`, 'info')} />
+                <WordCard
+                  key={word.id}
+                  word={word}
+                  displayLanguage={displayLanguage}
+                  onPlayAudio={(item) => notify(`Audio preview: ${item.cree}`, 'info')}
+                />
               ))}
             </div>
           </div>
