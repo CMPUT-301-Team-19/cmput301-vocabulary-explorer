@@ -55,7 +55,7 @@ export default function SavedPage() {
                     <p className="muted small-copy">{word.cree}</p>
                   </div>
                   <div className="mini-actions">
-                    <Link className="text-button" to={`/details/${word.id}`} onClick={() => setViewTopic(null)}>
+                    <Link className="text-button details-button" to={`/details/${word.id}`} onClick={() => setViewTopic(null)}>
                       Details
                     </Link>
                     <button className="danger-button small" onClick={() => removeWordFromTopic(viewTopic.id, word.id)}>

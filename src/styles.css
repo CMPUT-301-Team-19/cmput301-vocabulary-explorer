@@ -384,6 +384,14 @@ section div.explore-category {
   transition: 0.2s ease;
 }
 
+.details-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  background-color: #f4f6fb;
+}
+
 .primary-button,
 .secondary-button,
 .danger-button {
@@ -455,9 +463,13 @@ section div.explore-category {
   border: 1px solid var(--line);
 }
 
-.icon-spacer {
+/* .icon-spacer {
   width: 38px;
   height: 38px;
+} */
+
+h1 {
+  font-size: 1.8rem;
 }
 
 .mode-toggle {
