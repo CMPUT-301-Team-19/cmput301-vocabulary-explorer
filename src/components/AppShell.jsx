@@ -45,17 +45,6 @@ export default function AppShell({ title, children, showBack = false }) {
               ?
             </button>
           </div>
-          <div className="mode-toggle" role="tablist" aria-label="Detail level">
-            <button
-              className={mode === 'learner' ? 'toggle-on' : 'toggle-off'}
-              onClick={() => setMode('learner')}
-            >
-              Learner
-            </button>
-            <button className={mode === 'expert' ? 'toggle-on' : 'toggle-off'} onClick={() => setMode('expert')}>
-              Expert
-            </button>
-          </div>
         </header>
 
         <main className="screen-body">{children}</main>
