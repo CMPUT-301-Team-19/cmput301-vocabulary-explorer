@@ -12,7 +12,7 @@ export default function HomePage() {
 
   return (
     <AppShell title="Vocabulary Explorer">
-      <section className="hero-card">
+      <section className="hero-card home-search-hero">
         {/* <div>
           <p className="eyebrow">Browse or search</p>
         </div> */}
