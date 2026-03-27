@@ -17,12 +17,15 @@ function getDisplayText(word, displayLanguage) {
 
 function RelationBubble({ word, position, displayLanguage }) {
   const text = getDisplayText(word, displayLanguage)
+  const cree = word.cree || word.english
+  const english = word.english || word.cree
+  const form = word.syllabics || ''
 
   return (
     <Link className="relation-bubble" to={`/related/${word.id}?lang=${displayLanguage}`} style={position}>
-      <strong>{text.title}</strong>
-      {text.form ? <small>{text.form}</small> : null}
-      <span>{text.translation}</span>
+      <strong>{cree}</strong>
+      {form ? <small>{form}</small> : null}
+      <span>{english}</span>
     </Link>
   )
 }
@@ -81,15 +84,18 @@ export default function RelatedPage() {
   }
 
   const focusText = getDisplayText(word, displayLanguage)
+  const focusCree = word.cree || word.english
+  const focusEnglish = word.english || word.cree
+  const focusForm = word.syllabics || ''
 
   return (
     <AppShell title="Related Words" showBack>
       <section className="hero-card compact-card">
         <div>
           <p className="eyebrow">Current focus</p>
-          <h2>{focusText.title}</h2>
-          {focusText.form ? <p className="muted">{focusText.form}</p> : null}
-          <p className="muted">{focusText.translation}</p>
+          <h2>{focusCree}</h2>
+          {focusForm ? <p className="muted">{focusForm}</p> : null}
+          <p className="muted">{focusEnglish}</p>
         </div>
 
         <div className="chip-row">
@@ -105,9 +111,9 @@ export default function RelatedPage() {
 
       <section className="relationship-map-card">
         <div className="focus-bubble">
-          <strong>{focusText.title}</strong>
-          {focusText.form ? <small>{focusText.form}</small> : null}
-          <span>{focusText.translation}</span>
+          <strong>{focusCree}</strong>
+          {focusForm ? <small>{focusForm}</small> : null}
+          <span>{focusEnglish}</span>
         </div>
 
         {selectedWords.slice(0, 4).map((relationWord, index) => (
