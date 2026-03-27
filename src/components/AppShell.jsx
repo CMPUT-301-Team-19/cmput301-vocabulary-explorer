@@ -37,7 +37,7 @@ export default function AppShell({ title, children, showBack = false }) {
                 <div className="icon-spacer" />
               )}
               <div>
-                <p className="eyebrow">Medium-fidelity prototype</p>
+                {/* <p className="eyebrow">Medium-fidelity prototype</p> */}
                 <h1>{title}</h1>
               </div>
             </div>

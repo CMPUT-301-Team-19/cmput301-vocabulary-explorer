@@ -13,13 +13,9 @@ export default function HomePage() {
   return (
     <AppShell title="Vocabulary Explorer">
       <section className="hero-card">
-        <div>
+        {/* <div>
           <p className="eyebrow">Browse or search</p>
-          <h2>Learn through topics, related words, and saved study sets.</h2>
-          <p className="muted">
-            This medium-fidelity prototype focuses on beginner learning, teacher lesson building, and expert exploration.
-          </p>
-        </div>
+        </div> */}
         <SearchField
           value={query}
           onChange={setQuery}
@@ -55,18 +51,6 @@ export default function HomePage() {
               {!topic.prototypeReady && <span className="chip chip-neutral">Prototype later</span>}
             </button>
           ))}
-        </div>
-      </section>
-
-      <section className="section-block slim-stack">
-        <div className="info-strip">
-          <strong>Maya path:</strong> tap a topic, open a word, listen, and save words for later.
-        </div>
-        <div className="info-strip">
-          <strong>Rochelle path:</strong> start from a topic, pick related words, and save a lesson set.
-        </div>
-        <div className="info-strip">
-          <strong>Nathan path:</strong> search directly, inspect related words, and notice gaps or weak links.
         </div>
       </section>
     </AppShell>
