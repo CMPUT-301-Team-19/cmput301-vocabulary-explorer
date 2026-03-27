@@ -350,6 +350,12 @@ input {
   border: 1px solid transparent;
 }
 
+section div.explore-category {
+  display: flex;
+  flex-wrap: nowrap;  
+
+}
+
 .chip-neutral {
   background: #f3f5fa;
   color: #425067;
@@ -492,6 +498,38 @@ input {
   padding: 0;
 }
 
+.graph-network-card {
+  isolation: isolate;
+  transition: min-height 180ms ease;
+}
+
+.graph-network-card.expanded {
+  min-height: 520px;
+}
+
+.graph-viewport {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: grab;
+}
+
+.graph-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.graph-world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+}
+
+.graph-controls {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
 .graph-lines {
   position: absolute;
   inset: 0;
@@ -506,6 +544,26 @@ input {
 }
 
 .topic-center-node {
+  z-index: 1;
+}
+
+.graph-line {
+  stroke: #cfd7ea;
+  stroke-width: 0.7;
+}
+
+.graph-line-child {
+  stroke: #b8c5e6;
+  stroke-width: 1.1;
+}
+
+.graph-line-strong {
+  stroke: #b9c5e3;
+  stroke-width: 1;
+}
+
+.topic-center-node,
+.focus-bubble {
   position: absolute;
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
@@ -521,6 +579,8 @@ input {
   box-shadow: 0 12px 24px rgba(76, 92, 128, 0.1);
   z-index: 2;
   gap: 4px;
+  z-index: 3;
+  transition: transform 180ms ease, width 180ms ease, height 180ms ease;
 }
 
 .topic-icon {
@@ -616,6 +676,37 @@ input {
   margin: 0;
 }
 
+.graph-node {
+  z-index: 2;
+}
+
+.graph-node-circle {
+  transform: translate(-50%, -50%);
+  width: 92px;
+  min-height: 92px;
+  border-radius: 50%;
+  gap: 4px;
+  padding: 10px;
+  transition: width 180ms ease, min-height 180ms ease, transform 180ms ease;
+}
+
+.graph-node-primary {
+  border-color: #b7c8ee;
+}
+
+.graph-node-secondary {
+  width: 82px;
+  min-height: 82px;
+  background: #f9fbff;
+  border-color: #d7e1f6;
+}
+
+.graph-network-card.expanded .graph-node-primary {
+  width: 84px;
+  min-height: 84px;
+}
+
+.graph-node small,
 .relation-bubble span {
   color: var(--muted);
   font-size: 0.78rem;

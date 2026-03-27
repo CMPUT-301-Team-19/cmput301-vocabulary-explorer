@@ -29,12 +29,17 @@ export default function TopicPage() {
   return (
     <AppShell title={topic.label} showBack>
       <TopicGraph topic={topic} words={words} expanded={expanded} />
+      
+      <section className="hero-card compact-card">
 
-      <section className="info-strip actionable-strip">
-        <span>Tap a node to explore related words.</span>
-        <button className="text-button" onClick={() => setExpanded((value) => !value)}>
-          {expanded ? 'Show less' : 'Show more'}
-        </button>
+        <div className="explore-category">
+          <span>Tap a node to explore related words.</span>
+          {/* <span className="chip chip-highlight">{expanded ? 'Expanded network' : 'Compact network'}</span> */}
+          <button className="secondary-button small" onClick={() => setExpanded((value) => !value)}>
+            {expanded ? 'Show less' : 'Show more'}
+          </button>
+        </div>
+        
       </section>
     </AppShell>
   )
