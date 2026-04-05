@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "homepage": "https://hanmaynas.github.io/cmput301-vocabulary-explorer",
+  "homepage": "https://CMPUT-301-Team-19.github.io/cmput301-vocabulary-explorer",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
